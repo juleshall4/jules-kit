@@ -68,6 +68,10 @@ export function validateProjectName(projectName: string): void {
   }
 }
 
+export function replaceProjectName(content: string, projectName: string): string {
+  return content.replace(/^# PROJECT_NAME$/m, `# ${projectName}`)
+}
+
 export function resolveTarget(options: CliOptions, cwd = process.cwd()): string {
   if (!options.projectName) {
     throw new Error('A project name is required.')
@@ -227,7 +231,13 @@ async function configureProject(target: string, projectName: string): Promise<vo
   const readmePath = join(target, 'README.md')
   if (existsSync(readmePath)) {
     const readme = await readFile(readmePath, 'utf8')
-    await writeFile(readmePath, readme.replace(/^# .*$/m, `# ${projectName}`))
+    await writeFile(readmePath, replaceProjectName(readme, projectName))
+  }
+
+  const agentsPath = join(target, 'AGENTS.md')
+  if (existsSync(agentsPath)) {
+    const agents = await readFile(agentsPath, 'utf8')
+    await writeFile(agentsPath, replaceProjectName(agents, projectName))
   }
 
   await Promise.all([

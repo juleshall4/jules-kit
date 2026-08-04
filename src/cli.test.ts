@@ -8,6 +8,7 @@ import {
   buildValidationCommands,
   ensureTargetDoesNotExist,
   parseCliArgs,
+  replaceProjectName,
   resolveTarget,
   validateProjectName,
 } from './cli.ts'
@@ -29,6 +30,10 @@ describe('CLI arguments', () => {
 
   test('rejects unsafe project names', () => {
     expect(() => validateProjectName('../app')).toThrow()
+  })
+
+  test('replaces the generated project name heading', () => {
+    expect(replaceProjectName('# PROJECT_NAME\n', 'my-app')).toBe('# my-app\n')
   })
 
   test('resolves the default target from the working directory', () => {
