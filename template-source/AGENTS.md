@@ -6,7 +6,7 @@ quality checks.
 ## Tech stack
 
 - React 19 and TypeScript
-- TanStack Start
+- TanStack Start and TanStack Router
 - Tailwind CSS 4 and shadcn/ui
 - Vite and Bun's test runner
 - Biome and Ultracite

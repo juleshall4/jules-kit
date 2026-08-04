@@ -16,9 +16,9 @@ bun run dev
 The CLI creates the folder, initializes Git, installs dependencies, and runs
 the checks. It does not create an initial commit.
 
-Generated projects include React 19, TypeScript, TanStack Start, Vite, Tailwind
-CSS 4, shadcn/ui, Nitro's Bun preset, Ultracite, Biome, Bun tests, React Doctor,
-a Bun lockfile, and `AGENTS.md`.
+Generated projects include React 19, TypeScript, TanStack Start, TanStack
+Router, Vite, Tailwind CSS 4, shadcn/ui, Nitro's Bun preset, Ultracite, Biome,
+Bun tests, React Doctor, a Bun lockfile, and `AGENTS.md`.
 
 ## Options
 
