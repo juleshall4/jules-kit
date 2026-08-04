@@ -17,7 +17,7 @@
       "build": "bun --bun vite build",
       "check": "ultracite check && tsc --noEmit",
       "dev": "bun --bun vite dev --port 3000",
-      "doctor": "react-doctor --no-score --no-telemetry",
+      "doctor": "react-doctor --no-score --no-telemetry --no-color",
       "fix": "ultracite fix",
       "start": "bun run .output/server/index.mjs",
       "test": "bun test"

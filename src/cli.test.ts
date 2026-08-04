@@ -10,6 +10,7 @@ import {
   buildScaffoldArgs,
   buildValidationCommands,
   ensureTargetDoesNotExist,
+  hasGitHubWorkflowScope,
   isVersionAtLeast,
   parseCliArgs,
   replaceProjectName,
@@ -47,6 +48,12 @@ describe('CLI arguments', () => {
     expect(isVersionAtLeast('1.2.20', '1.2.20')).toBe(true)
     expect(isVersionAtLeast('1.3.0', '1.2.20')).toBe(true)
     expect(isVersionAtLeast('1.2.19', '1.2.20')).toBe(false)
+  })
+
+  test('checks the GitHub workflow token scope', () => {
+    expect(hasGitHubWorkflowScope('X-OAuth-Scopes: gist, repo, workflow')).toBe(true)
+    expect(hasGitHubWorkflowScope('X-OAuth-Scopes: gist, repo')).toBe(false)
+    expect(hasGitHubWorkflowScope('HTTP/2.0 200 OK')).toBe(true)
   })
 
   test('resolves the default target from the working directory', () => {

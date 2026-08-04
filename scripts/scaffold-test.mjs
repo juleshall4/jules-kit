@@ -144,6 +144,12 @@ if (args[0] === 'auth' && args[1] === 'status') {
   process.exit(0)
 }
 
+if (args[0] === 'api') {
+  console.log('HTTP/2.0 200 OK')
+  console.log('X-OAuth-Scopes: gist, repo, workflow')
+  process.exit(0)
+}
+
 if (args[0] === 'repo' && args[1] === 'create') {
   appendFileSync(process.env.GH_STUB_LOG, JSON.stringify(args) + '\\n')
   execFileSync('git', ['remote', 'add', 'origin', 'https://github.com/example/e2e-app.git'])
@@ -179,6 +185,10 @@ try {
   assert(agents.startsWith('# e2e-app\n'), 'Generated AGENTS.md name is incorrect.')
   assert(existsSync(join(target, '.git')), 'Git repository was not initialized.')
   assert(existsSync(join(target, 'bun.lock')), 'Bun lockfile is missing.')
+  assert(
+    existsSync(join(target, '.github', 'workflows', 'react-doctor.yml')),
+    'React Doctor workflow is missing.',
+  )
   assert(existsSync(join(target, 'components.json')), 'shadcn config is missing.')
   assert(existsSync(join(target, 'src', 'lib', 'utils.ts')), 'shadcn utility is missing.')
   assert(existsSync(join(target, 'src', 'components', 'ui', 'button.tsx')), 'shadcn button is missing.')

@@ -34,3 +34,8 @@ class merging.
 bunx --bun shadcn@4.16.0 add card
 bun run fix
 ```
+
+## CI
+
+React Doctor runs automatically on pull requests through
+`.github/workflows/react-doctor.yml`.

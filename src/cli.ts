@@ -98,6 +98,21 @@ export function isVersionAtLeast(version: string, minimum: string): boolean {
   return true
 }
 
+export function hasGitHubWorkflowScope(response: string): boolean {
+  const scopeHeader = response
+    .split(/\r?\n/)
+    .find((line) => /^x-oauth-scopes:/i.test(line))
+
+  if (!scopeHeader) {
+    return true
+  }
+
+  return scopeHeader
+    .slice(scopeHeader.indexOf(':') + 1)
+    .split(',')
+    .some((scope) => scope.trim() === 'workflow')
+}
+
 export function replaceProjectName(content: string, projectName: string): string {
   return content.replace(/^# PROJECT_NAME$/m, `# ${projectName}`)
 }
@@ -213,6 +228,26 @@ async function ensureEnvironment(): Promise<void> {
     await execFileAsync('gh', ['auth', 'status', '--hostname', 'github.com'])
   } catch {
     throw new Error('GitHub CLI is not authenticated. Run `gh auth login` and try again.')
+  }
+
+  let githubApiHeaders: string
+  try {
+    const result = await execFileAsync('gh', [
+      'api',
+      '--hostname',
+      'github.com',
+      '-i',
+      'user',
+    ])
+    githubApiHeaders = result.stdout
+  } catch {
+    throw new Error('Could not verify GitHub token permissions. Run `gh auth status` and try again.')
+  }
+
+  if (!hasGitHubWorkflowScope(githubApiHeaders)) {
+    throw new Error(
+      'GitHub CLI token is missing the workflow scope. Run `gh auth refresh -h github.com -s workflow` and try again.',
+    )
   }
 }
 
@@ -350,7 +385,7 @@ async function publishToGitHub(target: string, projectName: string): Promise<voi
     await run('gh', buildGitHubCreateArgs(projectName), target)
   } catch (error) {
     throw new Error(
-      `Could not create and push the public GitHub repository. ${errorMessage(error)} The local project remains at ${target}.`,
+      `Could not create and push the public GitHub repository. ${errorMessage(error)} If GitHub mentions workflow permissions, run \`gh auth refresh -h github.com -s workflow\` and then \`git push -u origin main\`. The local project remains at ${target}.`,
     )
   }
 }

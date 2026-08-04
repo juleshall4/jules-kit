@@ -11,7 +11,11 @@ Authenticate GitHub once before using the generator:
 
 ```bash
 gh auth login
+gh auth refresh -h github.com -s workflow
 ```
+
+The `workflow` scope is required because each generated project includes the
+React Doctor GitHub Actions workflow.
 
 ```bash
 # From this repository
@@ -45,6 +49,7 @@ starter for everyone.
 - Tailwind CSS 4 and shadcn/ui
 - Bun's test runner
 - Ultracite, Biome, and React Doctor
+- React Doctor GitHub Actions workflow for pull requests
 - A starter shadcn button, with its class and icon helpers used in the home route
 - Pinned dependencies and a Bun lockfile
 
