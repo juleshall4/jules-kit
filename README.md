@@ -1,7 +1,11 @@
 # create-jules-kit
 
-Create a Bun-first TanStack Start application with Tailwind CSS, shadcn/ui,
-Ultracite, React Doctor, tests, and a repeatable `AGENTS.md`.
+Generate a ready-to-run TanStack Start app with Bun, Tailwind CSS, shadcn/ui,
+and built-in quality checks.
+
+## Quick start
+
+Requirements: Node.js 20+, Bun 1.2.20+, and Git.
 
 ```bash
 bunx create-jules-kit my-app
@@ -9,45 +13,99 @@ cd my-app
 bun run dev
 ```
 
-The generated app also provides:
+The CLI creates `./my-app`, initializes Git, installs dependencies, and runs
+the checks below. It does not create an initial commit.
+
+## Generated app
+
+Each project includes:
+
+- React 19 and TypeScript
+- TanStack Start with Vite
+- Tailwind CSS 4 and shadcn/ui configuration
+- Nitro's Bun preset for the production server
+- Ultracite and Biome
+- Bun's test runner
+- React Doctor
+- A pinned Bun lockfile
+- A repeatable `AGENTS.md`
+
+## Commands
 
 ```bash
-bun run check
-bun run fix
-bun run test
-bun run doctor
+bun run dev      # start the development server
+bun run build    # create a production build
+bun run start    # run the production build
+bun run test     # run tests
+bun run check    # run Ultracite and TypeScript checks
+bun run fix      # fix formatting and code quality issues
+bun run doctor   # run React Doctor
+```
+
+The production flow is:
+
+```bash
 bun run build
 bun run start
 ```
 
-The generated app includes Tailwind CSS through Vite and a shadcn/ui
-`components.json` setup with the `cn` helper in `src/lib/utils.ts`.
+The generated app uses Nitro's Bun output and does not include platform-specific
+deployment configuration.
 
-This v1 intentionally uses Bun's test runner for `bun run test`; Vitest is not
-installed.
-
-The generator creates a new directory, initializes Git, and does not create an
-initial commit.
+## CLI options
 
 ```text
 create-jules-kit <project-name>
 create-jules-kit <project-name> --target-dir <path>
 create-jules-kit <project-name> --no-install
 create-jules-kit <project-name> --dry-run
+create-jules-kit --help
+create-jules-kit --version
 ```
 
-The CLI requires Node 20+, Bun 1.2.20+, and Git. Existing target directories
-are rejected. `--dry-run` prints the planned scaffold without creating files.
+- `--target-dir <path>` creates the project at a specific path.
+- `--no-install` skips dependency installation and validation.
+- `--dry-run` prints the plan without creating files.
 
-When editing `template-source`, run `bun run template:build` to regenerate the
-bundled template manifest before building or publishing.
+Project names must start with a lowercase letter and contain only lowercase
+letters, numbers, and hyphens. Existing target directories are rejected.
 
-## Release
+## shadcn/ui
 
-Run the manual `Release` workflow from GitHub Actions and choose `patch`,
-`minor`, or `major`. It runs the full checks, bumps the version, generates a
-changelog entry, publishes the package, then commits and tags the release.
+The generated project already includes `components.json` and the `cn` helper.
+Add components with a pinned CLI version:
 
-Configure npm Trusted Publishing for this repository and the
-`.github/workflows/release.yml` workflow before using it:
-[npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/).
+```bash
+bunx --bun shadcn@4.16.0 add button
+bun run fix
+```
+
+Components are added to `src/components/ui`.
+
+## Developing the CLI
+
+```bash
+bun install
+bun run check
+bun run test
+bun run build
+bun run test:scaffold
+npm pack --dry-run
+```
+
+The template source lives in `template-source`. After editing it, regenerate
+the bundled template before building or publishing:
+
+```bash
+bun run template:build
+```
+
+CI checks that the generated template is reproducible and that a fresh project
+can install, check, build, test, run React Doctor, and start its production
+server.
+
+## Releases
+
+Releases are manual. Run the `Release` workflow in GitHub Actions, choose a
+patch, minor, or major release, and configure [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)
+for the workflow first.
