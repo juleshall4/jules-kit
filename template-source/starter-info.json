@@ -1,0 +1,47 @@
+{
+  "id": "create-jules-kit",
+  "name": "create-jules-kit",
+  "version": "0.0.1",
+  "description": "A Bun-first TanStack Start template.",
+  "author": "Jules Hall",
+  "license": "MIT",
+  "link": "https://github.com/juleshall4/jules-kit",
+  "shadcnComponents": [],
+  "framework": "react",
+  "mode": "file-router",
+  "routes": [],
+  "warning": "",
+  "type": "starter",
+  "packageAdditions": {
+    "scripts": {
+      "build": "bun --bun vite build",
+      "check": "ultracite check && tsc --noEmit",
+      "dev": "bun --bun vite dev --port 3000",
+      "doctor": "react-doctor --no-score --no-telemetry",
+      "fix": "ultracite fix",
+      "start": "bun run .output/server/index.mjs",
+      "test": "bun test"
+    },
+    "dependencies": {
+      "@tanstack/react-router": "1.170.18",
+      "@tanstack/react-start": "1.168.35",
+      "react": "19.2.8",
+      "react-dom": "19.2.8"
+    },
+    "devDependencies": {
+      "@biomejs/biome": "2.5.6",
+      "@types/node": "26.1.2",
+      "@types/react": "19.2.18",
+      "@types/react-dom": "19.2.4",
+      "@vitejs/plugin-react": "6.0.5",
+      "bun-types": "1.3.14",
+      "nitro": "3.0.260610-beta",
+      "react-doctor": "0.9.4",
+      "typescript": "6.0.3",
+      "ultracite": "7.10.0",
+      "vite": "8.2.0"
+    }
+  },
+  "dependsOn": [],
+  "typescript": true
+}

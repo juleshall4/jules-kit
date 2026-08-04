@@ -1,0 +1,10 @@
+node_modules
+dist
+.DS_Store
+*.tgz
+template-source/node_modules
+template-source/.git
+template-source/.tanstack
+template-source/.output
+template-source/dist
+template-source/routeTree.gen.ts
