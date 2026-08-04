@@ -1,7 +1,7 @@
 # create-jules-kit
 
-Generate a ready-to-run TanStack Start app with Bun, Tailwind CSS, shadcn/ui,
-and quality checks.
+Generate my personal, opinionated TanStack Start setup with Bun, Tailwind CSS,
+shadcn/ui, and quality checks.
 
 ## Usage
 
@@ -23,9 +23,28 @@ This uses the local CLI; no npm publish is required. The target folder is
 created first, then the CLI initializes Git, installs dependencies, and runs the
 checks. It does not create an initial commit.
 
-Generated projects include React 19, TypeScript, TanStack Start, TanStack
-Router, Vite, Tailwind CSS 4, shadcn/ui, Nitro's Bun preset, Ultracite, Biome,
-Bun tests, React Doctor, a Bun lockfile, and `AGENTS.md`.
+This is a personal setup of the tools I like to use and the conventions I like
+to start projects with. It is intentionally opinionated rather than a neutral
+starter for everyone.
+
+## What it installs
+
+- React 19 and TypeScript
+- TanStack Start and TanStack Router
+- Vite and Nitro with the Bun preset
+- Tailwind CSS 4 and shadcn/ui
+- Bun's test runner
+- Ultracite, Biome, and React Doctor
+- shadcn helpers: `clsx`, `tailwind-merge`, `class-variance-authority`, and Lucide
+- Pinned dependencies and a Bun lockfile
+
+It also adds a repeatable `AGENTS.md` structured as:
+
+- repository name and short description
+- tech stack
+- useful commands
+- personal rules for searching, file structure, comments, documentation, Bun,
+  and finishing checks
 
 ## Options
 
