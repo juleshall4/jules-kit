@@ -15,11 +15,13 @@ const require = createRequire(import.meta.url)
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const templatePath = join(root, 'templates', 'template.json')
 const packagePatchPath = join(root, 'templates', 'project-package.json')
+export const minimumBunVersion = '1.2.20'
 
 export type CliOptions = {
   projectName?: string
   targetDir?: string
   noInstall: boolean
+  dryRun: boolean
   help: boolean
   version: boolean
 }
@@ -30,6 +32,7 @@ export function usage(): string {
 Options:
   --target-dir <path>  Create the project at a specific path
   --no-install         Skip dependency installation and validation
+  --dry-run             Show the plan without creating files
   -h, --help           Show this help
   -v, --version        Show the package version`
 }
@@ -42,6 +45,7 @@ export function parseCliArgs(args: string[]): CliOptions {
     options: {
       'target-dir': { type: 'string' },
       'no-install': { type: 'boolean' },
+      'dry-run': { type: 'boolean' },
       help: { type: 'boolean', short: 'h' },
       version: { type: 'boolean', short: 'v' },
     },
@@ -55,6 +59,7 @@ export function parseCliArgs(args: string[]): CliOptions {
     projectName: positionals[0],
     targetDir: values['target-dir'],
     noInstall: values['no-install'] ?? false,
+    dryRun: values['dry-run'] ?? false,
     help: values.help ?? false,
     version: values.version ?? false,
   }
@@ -66,6 +71,30 @@ export function validateProjectName(projectName: string): void {
       'Project name must start with a lowercase letter and contain only lowercase letters, numbers, and hyphens.',
     )
   }
+}
+
+export function isVersionAtLeast(version: string, minimum: string): boolean {
+  const parseVersion = (value: string): [number, number, number] | undefined => {
+    const match = /^(\d+)\.(\d+)\.(\d+)/.exec(value)
+    if (!match) {
+      return undefined
+    }
+    return [Number(match[1]), Number(match[2]), Number(match[3])]
+  }
+
+  const current = parseVersion(version)
+  const required = parseVersion(minimum)
+  if (!current || !required) {
+    return false
+  }
+
+  for (let index = 0; index < current.length; index += 1) {
+    if (current[index] !== required[index]) {
+      return current[index] > required[index]
+    }
+  }
+
+  return true
 }
 
 export function replaceProjectName(content: string, projectName: string): string {
@@ -147,16 +176,24 @@ async function ensureEnvironment(): Promise<void> {
     throw new Error(`Node 20+ is required; found ${process.version}.`)
   }
 
-  await ensureCommand('bun', ['--version'])
+  const bunVersion = await ensureCommand('bun', ['--version'])
+  if (!isVersionAtLeast(bunVersion, minimumBunVersion)) {
+    throw new Error(`Bun ${minimumBunVersion}+ is required; found ${bunVersion}.`)
+  }
   await ensureCommand('git', ['--version'])
 }
 
-export async function ensureTargetDoesNotExist(target: string): Promise<void> {
+export async function ensureTargetDoesNotExist(
+  target: string,
+  createParent = true,
+): Promise<void> {
   if (existsSync(target)) {
     throw new Error(`Target already exists; choose a new path: ${target}`)
   }
 
-  await mkdir(dirname(target), { recursive: true })
+  if (createParent) {
+    await mkdir(dirname(target), { recursive: true })
+  }
 }
 
 function resolveTanStackCliBin(): string {
@@ -181,7 +218,9 @@ function run(command: string, args: readonly string[], cwd?: string): Promise<vo
       shell: false,
     })
 
-    child.on('error', reject)
+    child.on('error', (error) => {
+      reject(new Error(`Could not start ${command}: ${error.message}`))
+    })
     child.on('close', (code) => {
       if (code === 0) {
         resolvePromise()
@@ -190,6 +229,18 @@ function run(command: string, args: readonly string[], cwd?: string): Promise<vo
       }
     })
   })
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
+}
+
+async function runStep(label: string, action: () => Promise<void>): Promise<void> {
+  try {
+    await action()
+  } catch (error) {
+    throw new Error(`${label} failed: ${errorMessage(error)}`)
+  }
 }
 
 async function scaffold(target: string, projectName: string): Promise<void> {
@@ -262,8 +313,29 @@ async function runValidation(target: string): Promise<void> {
   for (const command of buildValidationCommands()) {
     const [name, executable, args] = command
     console.log(`\nRunning ${name}...`)
-    await run(executable, args, target)
+    await runStep(name, () => run(executable, args, target))
   }
+}
+
+function printDryRun(
+  projectName: string,
+  target: string,
+  noInstall: boolean,
+): void {
+  console.log(
+    [
+      'Dry run: no files will be created.',
+      '',
+      `Project: ${projectName}`,
+      `Target: ${target}`,
+      'Template: bundled TanStack Start template',
+      `Git: git init ${target} (no initial commit)`,
+      noInstall ? 'Install: skipped (--no-install)' : 'Install: bun install',
+      noInstall
+        ? 'Validation: skipped (--no-install)'
+        : 'Validation: bun run check, build, test, and doctor',
+    ].join('\n'),
+  )
 }
 
 export async function main(args = process.argv.slice(2)): Promise<void> {
@@ -282,18 +354,30 @@ export async function main(args = process.argv.slice(2)): Promise<void> {
   const target = resolveTarget(options)
   const projectName = options.projectName as string
 
+  if (options.dryRun) {
+    await ensureTargetDoesNotExist(target, false)
+    printDryRun(projectName, target, options.noInstall)
+    return
+  }
+
   await ensureEnvironment()
   await ensureTargetDoesNotExist(target)
 
   console.log(`Creating ${projectName} in ${target}...`)
-  await scaffold(target, projectName)
-  await configureProject(target, projectName)
-  await initializeGit(target)
+  try {
+    await runStep('Scaffolding', () => scaffold(target, projectName))
+    await runStep('Project configuration', () => configureProject(target, projectName))
+    await initializeGit(target)
 
-  if (!options.noInstall) {
-    console.log('\nInstalling dependencies...')
-    await run('bun', ['install'], target)
-    await runValidation(target)
+    if (!options.noInstall) {
+      console.log('\nInstalling dependencies...')
+      await runStep('Dependency installation', () => run('bun', ['install'], target))
+      await runStep('Validation', () => runValidation(target))
+    }
+  } catch (error) {
+    throw new Error(
+      `Project creation failed for ${projectName}. Any generated files were kept at ${target} for inspection.\n${errorMessage(error)}`,
+    )
   }
 
   console.log(`\nCreated ${projectName}.`)

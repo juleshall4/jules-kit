@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test'
-import { mkdtemp, rmdir } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
+import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -7,6 +8,7 @@ import {
   buildScaffoldArgs,
   buildValidationCommands,
   ensureTargetDoesNotExist,
+  isVersionAtLeast,
   parseCliArgs,
   replaceProjectName,
   resolveTarget,
@@ -15,10 +17,13 @@ import {
 
 describe('CLI arguments', () => {
   test('parses the documented options', () => {
-    expect(parseCliArgs(['my-app', '--target-dir', './apps/my-app', '--no-install'])).toEqual({
+    expect(
+      parseCliArgs(['my-app', '--target-dir', './apps/my-app', '--no-install', '--dry-run']),
+    ).toEqual({
       projectName: 'my-app',
       targetDir: './apps/my-app',
       noInstall: true,
+      dryRun: true,
       help: false,
       version: false,
     })
@@ -36,6 +41,12 @@ describe('CLI arguments', () => {
     expect(replaceProjectName('# PROJECT_NAME\n', 'my-app')).toBe('# my-app\n')
   })
 
+  test('checks minimum Bun versions', () => {
+    expect(isVersionAtLeast('1.2.20', '1.2.20')).toBe(true)
+    expect(isVersionAtLeast('1.3.0', '1.2.20')).toBe(true)
+    expect(isVersionAtLeast('1.2.19', '1.2.20')).toBe(false)
+  })
+
   test('resolves the default target from the working directory', () => {
     expect(resolveTarget(parseCliArgs(['my-app']), '/tmp')).toBe('/tmp/my-app')
   })
@@ -48,7 +59,19 @@ describe('CLI arguments', () => {
         'Target already exists',
       )
     } finally {
-      await rmdir(existing)
+      await rm(existing, { force: true, recursive: true })
+    }
+  })
+
+  test('does not create a parent directory during a dry run', async () => {
+    const existing = await mkdtemp(join(tmpdir(), 'create-jules-kit-'))
+    const target = join(existing, 'nested', 'my-app')
+
+    try {
+      await ensureTargetDoesNotExist(target, false)
+      expect(existsSync(join(existing, 'nested'))).toBe(false)
+    } finally {
+      await rm(existing, { force: true, recursive: true })
     }
   })
 

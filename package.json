@@ -16,8 +16,10 @@
     "build": "bun build src/cli.ts --target=node --format=esm --outfile=dist/cli.js",
     "check": "tsc --noEmit",
     "test": "bun test src",
+    "test:scaffold": "node scripts/scaffold-test.mjs",
+    "template:build": "node scripts/build-template.mjs",
     "pack:check": "npm pack --dry-run",
-    "prepublishOnly": "bun run check && bun run test && bun run build && bun run pack:check"
+    "prepublishOnly": "bun run template:build && bun run check && bun run test && bun run build && bun run test:scaffold && bun run pack:check"
   },
   "engines": {
     "node": ">=20"

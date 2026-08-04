@@ -20,17 +20,10 @@ jobs:
           bun-version: 1.2.20
 
       - run: bun install --frozen-lockfile
+      - run: bun run template:build
+      - run: git diff --exit-code
       - run: bun run check
       - run: bun run test
       - run: bun run build
+      - run: bun run test:scaffold
       - run: npm pack --dry-run
-
-      - name: Validate scaffold
-        run: |
-          target_dir="$(mktemp -d)/ci-app"
-          node dist/cli.js ci-app --target-dir "$target_dir"
-          test -d "$target_dir/.git"
-          test -f "$target_dir/bun.lock"
-          test -f "$target_dir/AGENTS.md"
-          test -f "$target_dir/components.json"
-          test -f "$target_dir/src/lib/utils.ts"
