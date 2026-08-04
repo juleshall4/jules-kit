@@ -32,3 +32,5 @@ jobs:
           test -d "$target_dir/.git"
           test -f "$target_dir/bun.lock"
           test -f "$target_dir/AGENTS.md"
+          test -f "$target_dir/components.json"
+          test -f "$target_dir/src/lib/utils.ts"

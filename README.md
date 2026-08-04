@@ -1,7 +1,7 @@
 # create-jules-kit
 
-Create a Bun-first TanStack Start application with Ultracite, React Doctor,
-tests, and a repeatable `AGENTS.md`.
+Create a Bun-first TanStack Start application with Tailwind CSS, shadcn/ui,
+Ultracite, React Doctor, tests, and a repeatable `AGENTS.md`.
 
 ```bash
 bunx create-jules-kit my-app
@@ -19,6 +19,9 @@ bun run doctor
 bun run build
 bun run start
 ```
+
+The generated app includes Tailwind CSS through Vite and a shadcn/ui
+`components.json` setup with the `cn` helper in `src/lib/utils.ts`.
 
 The generator creates a new directory, initializes Git, and does not create an
 initial commit.

@@ -3,6 +3,8 @@
 - Use Bun for installs, scripts, tests, and the production server.
 - Run `bun run check`, `bun run build`, `bun run test`, and `bun run doctor` before finishing work.
 - Use Ultracite for formatting and linting; do not add Prettier or ESLint unless explicitly requested.
+- Use Tailwind utility classes for styling and keep shadcn/ui components in `src/components/ui`.
+- Use `src/lib/utils.ts` for shadcn's `cn` helper and keep generated component dependencies pinned.
 - TanStack Start routes live in `src/routes`.
 - Do not edit `src/routeTree.gen.ts`; TanStack Router generates it.
 - Keep server-only code out of browser modules and keep browser-only APIs out of server code.
