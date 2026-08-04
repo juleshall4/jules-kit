@@ -16,6 +16,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const templatePath = join(root, 'templates', 'template.json')
 const packagePatchPath = join(root, 'templates', 'project-package.json')
 export const minimumBunVersion = '1.2.20'
+export const initialCommitMessage = 'chore: initial project scaffold'
 
 export type CliOptions = {
   projectName?: string
@@ -148,6 +149,31 @@ export function buildValidationCommands(): readonly (readonly [
   ]
 }
 
+export function buildInitialCommitCommands(): readonly (readonly [
+  string,
+  readonly string[],
+])[] {
+  return [
+    ['git', ['branch', '-M', 'main']],
+    ['git', ['add', '--all']],
+    ['git', ['commit', '--message', initialCommitMessage]],
+  ]
+}
+
+export function buildGitHubCreateArgs(projectName: string): readonly string[] {
+  return [
+    'repo',
+    'create',
+    projectName,
+    '--public',
+    '--source',
+    '.',
+    '--remote',
+    'origin',
+    '--push',
+  ]
+}
+
 async function readJson<T>(path: string): Promise<T> {
   return JSON.parse(await readFile(path, 'utf8')) as T
 }
@@ -181,6 +207,13 @@ async function ensureEnvironment(): Promise<void> {
     throw new Error(`Bun ${minimumBunVersion}+ is required; found ${bunVersion}.`)
   }
   await ensureCommand('git', ['--version'])
+  await ensureCommand('gh', ['--version'])
+
+  try {
+    await execFileAsync('gh', ['auth', 'status', '--hostname', 'github.com'])
+  } catch {
+    throw new Error('GitHub CLI is not authenticated. Run `gh auth login` and try again.')
+  }
 }
 
 export async function ensureTargetDoesNotExist(
@@ -309,6 +342,19 @@ async function initializeGit(target: string): Promise<void> {
   }
 }
 
+async function publishToGitHub(target: string, projectName: string): Promise<void> {
+  try {
+    for (const [command, args] of buildInitialCommitCommands()) {
+      await run(command, args, target)
+    }
+    await run('gh', buildGitHubCreateArgs(projectName), target)
+  } catch (error) {
+    throw new Error(
+      `Could not create and push the public GitHub repository. ${errorMessage(error)} The local project remains at ${target}.`,
+    )
+  }
+}
+
 async function runValidation(target: string): Promise<void> {
   for (const command of buildValidationCommands()) {
     const [name, executable, args] = command
@@ -329,7 +375,7 @@ function printDryRun(
       `Project: ${projectName}`,
       `Target: ${target}`,
       'Template: bundled TanStack Start template',
-      `Git: git init ${target} (no initial commit)`,
+      'GitHub: one main commit pushed to a new public repository with gh',
       noInstall ? 'Install: skipped (--no-install)' : 'Install: bun install',
       noInstall
         ? 'Validation: skipped (--no-install)'
@@ -378,6 +424,7 @@ export async function main(args = process.argv.slice(2)): Promise<void> {
       await runStep('Dependency installation', () => run('bun', ['install'], target))
       await runStep('Validation', () => runValidation(target))
     }
+    await runStep('GitHub publishing', () => publishToGitHub(target, projectName))
   } catch (error) {
     throw new Error(
       `Project creation failed for ${projectName}. Any generated files were kept at ${target} for inspection.\n${errorMessage(error)}`,

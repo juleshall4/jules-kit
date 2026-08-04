@@ -5,6 +5,8 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import {
+  buildGitHubCreateArgs,
+  buildInitialCommitCommands,
   buildScaffoldArgs,
   buildValidationCommands,
   ensureTargetDoesNotExist,
@@ -99,6 +101,25 @@ describe('CLI arguments', () => {
       ['test', 'bun', ['run', 'test']],
       ['doctor', 'bun', ['run', 'doctor']],
       ['build', 'bun', ['run', 'build']],
+    ])
+  })
+
+  test('builds the one-commit GitHub publish sequence', () => {
+    expect(buildInitialCommitCommands()).toEqual([
+      ['git', ['branch', '-M', 'main']],
+      ['git', ['add', '--all']],
+      ['git', ['commit', '--message', 'chore: initial project scaffold']],
+    ])
+    expect(buildGitHubCreateArgs('my-app')).toEqual([
+      'repo',
+      'create',
+      'my-app',
+      '--public',
+      '--source',
+      '.',
+      '--remote',
+      'origin',
+      '--push',
     ])
   })
 

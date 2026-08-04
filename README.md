@@ -5,7 +5,13 @@ shadcn/ui, and quality checks.
 
 ## Usage
 
-Requires Node.js 20+, Bun 1.2.20+, and Git.
+Requires Node.js 20+, Bun 1.2.20+, Git, and an authenticated GitHub CLI.
+
+Authenticate GitHub once before using the generator:
+
+```bash
+gh auth login
+```
 
 ```bash
 # From this repository
@@ -20,8 +26,12 @@ bun run dev
 ```
 
 This uses the local CLI; no npm publish is required. The target folder is
-created first, then the CLI initializes Git, installs dependencies, and runs the
-checks. It does not create an initial commit.
+created first, then the CLI initializes Git, installs dependencies, runs the
+checks, creates one commit on `main`, creates a public GitHub repository, and
+pushes it to `origin`.
+
+If the GitHub repository already exists or publishing fails, the local project
+is kept in place for inspection.
 
 This is a personal setup of the tools I like to use and the conventions I like
 to start projects with. It is intentionally opinionated rather than a neutral
@@ -55,7 +65,7 @@ create-jules-kit --help | --version
 ```
 
 Existing target directories are rejected. Project names use lowercase letters,
-numbers, and hyphens.
+numbers, and hyphens. The GitHub repository uses the same name as the project.
 
 ## Development
 
