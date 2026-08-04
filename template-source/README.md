@@ -26,10 +26,11 @@ bun run start
 ## UI
 
 Tailwind CSS is wired through Vite. shadcn/ui is configured in
-`components.json`; add components under `src/components/ui` and use
-`src/lib/utils.ts` for class merging.
+`components.json`; the starter includes a button under
+`src/components/ui`. Add more components there and use `src/lib/utils.ts` for
+class merging.
 
 ```bash
-bunx --bun shadcn@4.16.0 add button
+bunx --bun shadcn@4.16.0 add card
 bun run fix
 ```

@@ -33,7 +33,7 @@ quality checks.
 - Use Tailwind utility classes for styling and keep shadcn/ui components in `src/components/ui`.
 - Keep TanStack Start routes in `src/routes`.
 - Do not edit `src/routeTree.gen.ts`; TanStack Router generates it.
-- Run `bun run fix`, `bun run check`, `bun run build`, `bun run test`, and `bun run doctor` before finishing work.
+- Run `bun run fix`, `bun run check`, `bun run test`, `bun run doctor`, and `bun run build` before finishing work.
 - Explain plans, results, and model/system behaviour in simple, direct terms by default:
   - say what the thing does
   - say why it matters

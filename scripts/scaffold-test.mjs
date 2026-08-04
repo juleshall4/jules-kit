@@ -140,6 +140,7 @@ try {
   assert(existsSync(join(target, 'bun.lock')), 'Bun lockfile is missing.')
   assert(existsSync(join(target, 'components.json')), 'shadcn config is missing.')
   assert(existsSync(join(target, 'src', 'lib', 'utils.ts')), 'shadcn utility is missing.')
+  assert(existsSync(join(target, 'src', 'components', 'ui', 'button.tsx')), 'shadcn button is missing.')
   assert(!(await hasInitialCommit(target)), 'Generated Git repository has an initial commit.')
 
   await verifyProductionStart(target)

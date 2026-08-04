@@ -1,5 +1,6 @@
-import { expect, test } from 'bun:test'
+import { strict as assert } from 'node:assert/strict'
+import { test } from 'node:test'
 
 test('Bun test runner is available', () => {
-  expect(process.versions.bun).toBeDefined()
+  assert.ok(process.versions.bun)
 })

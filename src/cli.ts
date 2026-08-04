@@ -142,9 +142,9 @@ export function buildValidationCommands(): readonly (readonly [
 ])[] {
   return [
     ['check', 'bun', ['run', 'check']],
-    ['build', 'bun', ['run', 'build']],
     ['test', 'bun', ['run', 'test']],
     ['doctor', 'bun', ['run', 'doctor']],
+    ['build', 'bun', ['run', 'build']],
   ]
 }
 
@@ -275,7 +275,7 @@ async function configureProject(target: string, projectName: string): Promise<vo
   }
   const patchedTsconfig = tsconfig.replace(
     /"types"\s*:\s*\[[^\]]*\]/,
-    '"types": ["vite/client", "bun-types"]',
+    '"types": ["vite/client"]',
   )
   await writeFile(tsconfigPath, patchedTsconfig)
 
@@ -333,7 +333,7 @@ function printDryRun(
       noInstall ? 'Install: skipped (--no-install)' : 'Install: bun install',
       noInstall
         ? 'Validation: skipped (--no-install)'
-        : 'Validation: bun run check, build, test, and doctor',
+        : 'Validation: bun run check, test, doctor, and build',
     ].join('\n'),
   )
 }

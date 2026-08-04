@@ -35,7 +35,7 @@ starter for everyone.
 - Tailwind CSS 4 and shadcn/ui
 - Bun's test runner
 - Ultracite, Biome, and React Doctor
-- shadcn helpers: `clsx`, `tailwind-merge`, `class-variance-authority`, and Lucide
+- A starter shadcn button, with its class and icon helpers used in the home route
 - Pinned dependencies and a Bun lockfile
 
 It also adds a repeatable `AGENTS.md` structured as:
