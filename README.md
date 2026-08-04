@@ -8,13 +8,20 @@ and quality checks.
 Requires Node.js 20+, Bun 1.2.20+, and Git.
 
 ```bash
-bunx create-jules-kit my-app
+# From this repository
+bun install
+bun run build
+npm link
+
+# From the directory where you want the new app
+create-jules-kit my-app
 cd my-app
 bun run dev
 ```
 
-The CLI creates the folder, initializes Git, installs dependencies, and runs
-the checks. It does not create an initial commit.
+This uses the local CLI; no npm publish is required. The target folder is
+created first, then the CLI initializes Git, installs dependencies, and runs the
+checks. It does not create an initial commit.
 
 Generated projects include React 19, TypeScript, TanStack Start, TanStack
 Router, Vite, Tailwind CSS 4, shadcn/ui, Nitro's Bun preset, Ultracite, Biome,

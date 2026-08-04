@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { createRequire } from 'node:module'
-import { existsSync } from 'node:fs'
+import { existsSync, realpathSync } from 'node:fs'
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { spawn, execFile } from 'node:child_process'
@@ -365,6 +365,10 @@ export async function main(args = process.argv.slice(2)): Promise<void> {
 
   console.log(`Creating ${projectName} in ${target}...`)
   try {
+    await runStep('Creating project directory', async () => {
+      await mkdir(target)
+      console.log(`Project folder created: ${target}`)
+    })
     await runStep('Scaffolding', () => scaffold(target, projectName))
     await runStep('Project configuration', () => configureProject(target, projectName))
     await initializeGit(target)
@@ -386,7 +390,12 @@ export async function main(args = process.argv.slice(2)): Promise<void> {
 }
 
 const entrypoint = process.argv[1]
-if (entrypoint && resolve(entrypoint) === fileURLToPath(import.meta.url)) {
+const cliPath = fileURLToPath(import.meta.url)
+if (
+  entrypoint &&
+  existsSync(entrypoint) &&
+  realpathSync(entrypoint) === realpathSync(cliPath)
+) {
   main().catch((error: unknown) => {
     console.error(`\nError: ${error instanceof Error ? error.message : String(error)}`)
     process.exitCode = 1
