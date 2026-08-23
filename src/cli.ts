@@ -281,6 +281,7 @@ function run(command: string, args: readonly string[], cwd?: string): Promise<vo
   return new Promise((resolvePromise, reject) => {
     const child = spawn(command, args, {
       cwd,
+      env: cwd ? { ...process.env, INIT_CWD: cwd } : process.env,
       stdio: 'inherit',
       shell: false,
     })
