@@ -11,10 +11,11 @@ const sourceManifest = join(source, 'template.json')
 const starterManifest = join(source, 'starter.json')
 const bundledManifest = join(root, 'templates', 'template.json')
 
-function run(command, args, cwd) {
+function run(command, args, cwd, env = process.env) {
   return new Promise((resolvePromise, reject) => {
     const child = spawn(command, args, {
       cwd,
+      env,
       shell: false,
       stdio: 'inherit',
     })
@@ -53,7 +54,10 @@ async function normalizeManifest(path) {
   await writeFile(path, `${JSON.stringify(manifest, null, 2)}\n`)
 }
 
-await run('bun', ['install', '--frozen-lockfile'], source)
+await run('bun', ['install', '--frozen-lockfile'], source, {
+  ...process.env,
+  LEFTHOOK: '0',
+})
 await run('bun', ['run', 'fix'], source)
 await run(process.execPath, [resolveTanStackCliBin(), 'template', 'init'], source)
 await run('bun', ['run', 'fix'], source)
