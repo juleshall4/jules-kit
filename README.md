@@ -49,17 +49,9 @@ starter for everyone.
 - Tailwind CSS 4 and shadcn/ui
 - Bun's test runner
 - Ultracite, Biome, and React Doctor
-- React Doctor GitHub Actions workflow for pull requests
+- React Doctor GitHub Actions workflow for pull requests and Lefthook commit and push checks
 - A starter shadcn button, with its class and icon helpers used in the home route
 - Pinned dependencies and a Bun lockfile
-
-It also adds a repeatable `AGENTS.md` structured as:
-
-- repository name and short description
-- tech stack
-- useful commands
-- personal rules for searching, file structure, comments, documentation, Bun,
-  and finishing checks
 
 ## Options
 

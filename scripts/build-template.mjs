@@ -59,6 +59,7 @@ await run(process.execPath, [resolveTanStackCliBin(), 'template', 'init'], sourc
 await run('bun', ['run', 'fix'], source)
 await normalizeManifest(sourceManifest)
 await normalizeManifest(starterManifest)
+await run('bun', ['run', 'fix'], source)
 await writeFile(bundledManifest, await readFile(sourceManifest))
 
 console.log(`Bundled template written to ${bundledManifest}`)

@@ -106,7 +106,6 @@ describe('CLI arguments', () => {
     expect(buildValidationCommands()).toEqual([
       ['check', 'bun', ['run', 'check']],
       ['test', 'bun', ['run', 'test']],
-      ['doctor', 'bun', ['run', 'doctor']],
       ['build', 'bun', ['run', 'build']],
     ])
   })

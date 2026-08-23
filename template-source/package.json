@@ -8,9 +8,11 @@
   "scripts": {
     "build": "bun --bun vite build",
     "check": "ultracite check && tsc --noEmit",
+    "check:react": "bunx react-doctor@latest --scope changed --blocking error --verbose",
     "dev": "bun --bun vite dev --port 3000",
-    "doctor": "react-doctor --no-score --no-telemetry --no-color",
+    "doctor": "bunx react-doctor@latest --verbose",
     "fix": "ultracite fix",
+    "prepare": "node scripts/setup-git-hooks.mjs",
     "start": "bun run .output/server/index.mjs",
     "test": "bun test"
   },
@@ -34,6 +36,7 @@
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
     "@vitejs/plugin-react": "6.0.5",
+    "lefthook": "2.1.10",
     "nitro": "3.0.260610-beta",
     "react-doctor": "0.9.4",
     "typescript": "6.0.3",

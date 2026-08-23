@@ -19,6 +19,7 @@ bun run check
 bun run fix
 bun run test
 bun run doctor
+bun run check:react
 bun run build
 bun run start
 ```
@@ -39,3 +40,9 @@ bun run fix
 
 React Doctor runs automatically on pull requests through
 `.github/workflows/react-doctor.yml`.
+
+It also runs before each Git commit and Git push through Lefthook. Commit
+checks include the general quality checks and changed-file React Doctor scan;
+pushes run the full Doctor scan. If a commit check fails, the setup prints a
+diagnostic prompt and copies it to the clipboard when the laptop supports
+clipboard access.

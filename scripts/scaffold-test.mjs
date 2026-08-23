@@ -177,14 +177,27 @@ try {
   )
 
   const packageJson = JSON.parse(await readFile(join(target, 'package.json'), 'utf8'))
-  const agents = await readFile(join(target, 'AGENTS.md'), 'utf8')
 
   assert(packageJson.name === 'e2e-app', 'Generated package name is incorrect.')
   assert(packageJson.scripts.test === 'bun test', 'Generated test script is incorrect.')
   assert(packageJson.dependencies.tailwindcss === '4.1.18', 'Tailwind is not pinned.')
-  assert(agents.startsWith('# e2e-app\n'), 'Generated AGENTS.md name is incorrect.')
+  assert(!existsSync(join(target, 'AGENTS.md')), 'AGENTS.md should not be generated.')
+  assert(!existsSync(join(target, '.vscode')), '.vscode should not be generated.')
   assert(existsSync(join(target, '.git')), 'Git repository was not initialized.')
   assert(existsSync(join(target, 'bun.lock')), 'Bun lockfile is missing.')
+  assert(
+    existsSync(join(target, '.git', 'hooks', 'pre-commit')),
+    'Lefthook pre-commit hook is missing.',
+  )
+  assert(
+    existsSync(join(target, '.git', 'hooks', 'pre-push')),
+    'Lefthook pre-push hook is missing.',
+  )
+  assert(existsSync(join(target, 'lefthook.yml')), 'Lefthook configuration is missing.')
+  assert(
+    existsSync(join(target, 'scripts', 'precommit.mjs')),
+    'Pre-commit runner is missing.',
+  )
   assert(
     existsSync(join(target, '.github', 'workflows', 'react-doctor.yml')),
     'React Doctor workflow is missing.',
@@ -227,6 +240,32 @@ try {
   }
 
   await verifyProductionStart(target)
+
+  const bunStubPath = join(fakeBin, 'bun')
+  const bunStubLogPath = join(temporaryRoot, 'bun-stub-args.jsonl')
+  await writeFile(
+    bunStubPath,
+    `#!/usr/bin/env node
+import { appendFileSync } from 'node:fs'
+
+appendFileSync(process.env.BUN_STUB_LOG, JSON.stringify(process.argv.slice(2)) + '\\n')
+`,
+  )
+  await chmod(bunStubPath, 0o755)
+  await writeFile(join(target, 'hook-probe.txt'), 'verify the pre-commit hook\n')
+
+  const hookEnvironment = {
+    ...testEnvironment,
+    BUN_STUB_LOG: bunStubLogPath,
+  }
+  await run('git', ['add', 'hook-probe.txt'], target, hookEnvironment)
+  await run('git', ['commit', '--message', 'test: verify React Doctor hook'], target, hookEnvironment)
+
+  const hookArgs = JSON.parse((await readFile(bunStubLogPath, 'utf8')).trim())
+  for (const argument of ['scripts/precommit.mjs']) {
+    assert(hookArgs.includes(argument), `React Doctor hook is missing ${argument}.`)
+  }
+
   console.log('Scaffold E2E passed.')
 } finally {
   await rm(temporaryRoot, { force: true, recursive: true })

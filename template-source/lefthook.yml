@@ -1,0 +1,11 @@
+pre-commit:
+  jobs:
+    - name: checks
+      run: bun scripts/precommit.mjs
+
+pre-push:
+  jobs:
+    - name: react-doctor
+      files: git ls-files
+      # Keep the placeholder so Lefthook runs the full scan on every push.
+      run: 'bunx react-doctor@latest --verbose # {files}'

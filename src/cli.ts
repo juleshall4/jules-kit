@@ -159,7 +159,6 @@ export function buildValidationCommands(): readonly (readonly [
   return [
     ['check', 'bun', ['run', 'check']],
     ['test', 'bun', ['run', 'test']],
-    ['doctor', 'bun', ['run', 'doctor']],
     ['build', 'bun', ['run', 'build']],
   ]
 }
@@ -353,16 +352,11 @@ async function configureProject(target: string, projectName: string): Promise<vo
     await writeFile(readmePath, replaceProjectName(readme, projectName))
   }
 
-  const agentsPath = join(target, 'AGENTS.md')
-  if (existsSync(agentsPath)) {
-    const agents = await readFile(agentsPath, 'utf8')
-    await writeFile(agentsPath, replaceProjectName(agents, projectName))
-  }
-
   await Promise.all([
     rm(join(target, '.cta.json'), { force: true }),
     rm(join(target, 'template-info.json'), { force: true }),
     rm(join(target, 'template.json'), { force: true }),
+    rm(join(target, '.vscode'), { force: true, recursive: true }),
   ])
 }
 
@@ -414,7 +408,7 @@ function printDryRun(
       noInstall ? 'Install: skipped (--no-install)' : 'Install: bun install',
       noInstall
         ? 'Validation: skipped (--no-install)'
-        : 'Validation: bun run check, test, doctor, and build',
+        : 'Validation: bun run check, test, and build',
     ].join('\n'),
   )
 }

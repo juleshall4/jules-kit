@@ -1,0 +1,6 @@
+{
+  "$schema": "https://www.react.doctor/schemas/config.json",
+  "ignore": {
+    "files": [".output/**", ".nitro/**", ".tanstack/**"]
+  }
+}
