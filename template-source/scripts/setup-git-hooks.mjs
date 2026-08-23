@@ -1,5 +1,10 @@
 import { execFileSync } from 'node:child_process'
+import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
+
+if (!existsSync(resolve(process.cwd(), 'lefthook.yml'))) {
+  process.exit(0)
+}
 
 let repositoryRoot
 
