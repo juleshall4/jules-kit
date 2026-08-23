@@ -16,7 +16,7 @@
     "build": "bun build src/cli.ts --target=node --format=esm --outfile=dist/cli.js",
     "check": "tsc --noEmit",
     "check:react": "bunx react-doctor@latest --scope changed --blocking error --verbose",
-    "doctor": "bunx react-doctor@latest --verbose",
+    "doctor": "react-doctor --verbose",
     "prepare": "lefthook install",
     "test": "bun test src",
     "test:scaffold": "node scripts/scaffold-test.mjs",
