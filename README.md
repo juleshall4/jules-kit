@@ -1,6 +1,6 @@
 # create-jules-kit
 
-Generate personal, opinionated TanStack Start setup with Bun, Tailwind CSS,
+Generate my personal, opinionated TanStack Start setup with Bun, Tailwind CSS,
 shadcn/ui, and quality checks.
 
 ## Usage
