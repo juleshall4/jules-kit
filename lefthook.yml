@@ -1,6 +1,5 @@
 pre-push:
   jobs:
     - name: react-doctor
-      files: git ls-files
-      # Keep the placeholder so Lefthook runs the full scan on every push.
-      run: 'bun run doctor # {files}'
+      interactive: true
+      run: bun scripts/prepush.mjs
